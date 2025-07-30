@@ -22,6 +22,7 @@
   width: 100px;
   height: 150px;
   object-fit: cover;
+  display: block;
 }
 
 button {

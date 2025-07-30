@@ -32,30 +32,59 @@ const shuffleDeck = (deck) => {
 
 const CardDeck = () => {
   const [deck, setDeck] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     setDeck(shuffleDeck(generateDeck()));
+    setCurrentIndex(0); //reset top card
   }, []);
+
+
+  //handle next card click:
+  const handleNextCard = () => {
+    if (currentIndex < deck.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
 
   //handle reshuffle button click:
   const handleReshuffle = () => {
     setDeck(shuffleDeck(generateDeck()));
+    setCurrentIndex(0); //reset to top card
   };
 
-   return (
+  //image load errors
+  const handleImageError = (e, card) => {
+    console.error(`Failed to load image: ${card.image}`);
+    e.target.alt = 'Image not found';
+  };
+
+  //get current card (or null if deck is empty)
+  const currentCard = deck.length > 0 ? deck[currentIndex] : null;
+
+  return (
     <div className="card-deck-container">
       <h1>Shuffled Deck of Cards</h1>
-      <button onClick={handleReshuffle}>Reshuffle</button>
-      <div className="card-grid">
-        {deck.map((card, index) => (
-          <div key={`${card.suit}-${card.rank}-${index}`} className="card">
+      <div className="card-display">
+        {currentCard ? (
+          <div className="card">
             <img
-              src={card.image}
-              alt={`${card.rank} of ${card.suit}`}
+              src={currentCard.image}
+              alt={`${currentCard.rank} of ${currentCard.suit}`}
               className="card-image"
+              onError={(e) => handleImageError(e, currentCard)}
             />
           </div>
-        ))}
+        ) : (
+          <p>No cards available</p>
+        )}
+      </div>
+      <div className="button-container">
+        {currentIndex < deck.length - 1 ? (
+          <button onClick={handleNextCard}>Next Card</button>
+        ) : (
+          <button onClick={handleReshuffle}>Reshuffle</button>
+        )}
       </div>
     </div>
   );
